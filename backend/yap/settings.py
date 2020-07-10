@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import dj_database_url
+
+from .enviroment import ENVIROMENT, ENV_HEROKU
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'c*hpq927944et!$9&94xgb!$qmh7f$ek)9fm(kt(!l!wgkt4u8'
+SECRET_KEY = 'dev secret should not be used in production'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -118,3 +122,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'dist')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+# Heroku settings
+if ENVIROMENT == ENV_HEROKU:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL')
+        )
+    }
+    DEBUG = bool(os.getenv('DJANGO_DEBUG', ''))
+    SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY)
+    ALLOWED_HOSTS = ['yetanotherpoll.herokuapp.com']
