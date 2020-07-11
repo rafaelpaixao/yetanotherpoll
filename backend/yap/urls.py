@@ -17,7 +17,11 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 
+from .apps.polls.views import OptionViewset, PollViewset
+
 router = routers.DefaultRouter()
+router.register("option", OptionViewset)
+router.register("poll", PollViewset)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

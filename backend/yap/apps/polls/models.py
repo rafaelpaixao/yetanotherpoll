@@ -20,7 +20,7 @@ class Option(TimeStampedModel):
     """
 
     title = models.CharField(max_length=120)
-    poll = models.ForeignKey(Poll, models.PROTECT,)
+    poll = models.ForeignKey(Poll, models.PROTECT, related_name="options")
 
     def __str__(self):
         return self.title
