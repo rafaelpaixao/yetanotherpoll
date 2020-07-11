@@ -1,0 +1,8 @@
+[run]
+include = 
+    ./yap/*.py
+omit =
+    ./yap/settings.py
+
+[report]
+exclude_lines = def __str__

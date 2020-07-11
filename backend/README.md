@@ -40,6 +40,20 @@ pipenv run python manage.py runserver
 
 The yap-backend.code-workspace has predefined settings to help using black and pylint with VSCode. It's recommended to use this workspace and set your pythonPath at folder level settings (wich will be ignored by git).
 
+## Tests
+
+To run the tests:
+
+```
+pipenv run python manage.py test
+```
+
+To update the coverage:
+
+```
+coverage run manage.py test && coverage report -m
+```
+
 ## Guides
 
 - [Django static files on Heroku](https://devcenter.heroku.com/articles/django-assets#collectstatic-during-builds)

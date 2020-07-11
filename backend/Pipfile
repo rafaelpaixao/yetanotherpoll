@@ -11,6 +11,7 @@ psycopg2-binary = "==2.8.5"
 whitenoise = "==5.1.0"
 django-extensions = "==3.0.2"
 djangorestframework = "==3.11.0"
+coverage = "==5.2"
 
 [dev-packages]
 pylint = "==2.5.3"
