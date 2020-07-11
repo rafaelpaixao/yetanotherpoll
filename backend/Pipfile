@@ -3,6 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[scripts]
+    server = "python manage.py runserver"
+    test = "python manage.py test"
+    coverage = "coverage run manage.py test && coverage report -m"
+
 [packages]
 django = "==3.0.8"
 gunicorn = "==20.0.4"
@@ -20,3 +25,4 @@ black = "==19.10b0"
 
 [requires]
 python_version = "3"
+

@@ -19,7 +19,7 @@ pipenv install
 1. If can use Postgres by setting a enviroment variable like:
 
 ```
-pipenv run python manage.py migrate
+DATABASE_URL=postgres://user:password@host:port/dbname
 ```
 
 2. and then run the command bellow. Or skip the last step and jump the SQLite train:
@@ -33,7 +33,7 @@ pipenv run python manage.py migrate
 Start the development server using:
 
 ```
-pipenv run python manage.py runserver
+pipenv run server
 ```
 
 ## VS Code
@@ -45,13 +45,13 @@ The yap-backend.code-workspace has predefined settings to help using black and p
 To run the tests:
 
 ```
-pipenv run python manage.py test
+pipenv run test
 ```
 
 To update the coverage:
 
 ```
-coverage run manage.py test && coverage report -m
+pipenv run coverage
 ```
 
 ## Guides
