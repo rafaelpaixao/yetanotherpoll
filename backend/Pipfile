@@ -17,6 +17,7 @@ whitenoise = "==5.1.0"
 django-extensions = "==3.0.2"
 djangorestframework = "==3.11.0"
 coverage = "==5.2"
+django-cors-headers = "==3.4.0"
 
 [dev-packages]
 pylint = "==2.5.3"
@@ -25,4 +26,3 @@ black = "==19.10b0"
 
 [requires]
 python_version = "3"
-

@@ -42,11 +42,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "corsheaders",
     "rest_framework",
     "yap.apps.polls",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -118,9 +120,13 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# https://pypi.org/project/django-cors-headers/
+CORS_ORIGIN_WHITELIST = ["http://localhost:8080"]
+
 # Heroku settings
 if ENVIROMENT == ENV_HEROKU:
     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
     DEBUG = bool(os.getenv("DJANGO_DEBUG", ""))
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", SECRET_KEY)
     ALLOWED_HOSTS = ["yetanotherpoll.herokuapp.com"]
+    CORS_ORIGIN_WHITELIST = ["https://yetanotherpoll.netlify.app"]
