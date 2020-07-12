@@ -1,0 +1,33 @@
+- Poll Form
+    - Can create or edit a poll
+    - Props:
+        - Poll
+        - Route to redirect
+
+- Poll List
+    - List user's polls
+    - Props:
+        - Polls
+
+-Poll View
+    - Shows a poll and allows user to submit a vote
+    - Show button to poll's results
+    - Redirects to poll's results after user has voted
+    - Show button to edit the poll if user is it's owner
+    - Props:
+        - Poll
+
+- Poll Result
+    - Shows poll's results
+    - Show button to vote on poll
+    - Show button to edit the poll if user is it's owner
+    - Props:
+        - Poll
+
+- User Registration Form
+    - username
+    - password
+
+- User Login
+    - username
+    - password

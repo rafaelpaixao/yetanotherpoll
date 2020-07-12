@@ -1,12 +1,4 @@
-1. User can register/login to create multiple polls e see it's results
-
-2. User can register/login to answer polls and edit previous answers
-
-3. User can create polls as a guest and when he register, those polls are linked to him
-
-4. User can answer polls as a guest and when he register, those polls are linked to him
-
-
+- User can create, edit, vote and change his vote on polls without being authenticated. After registration, all polls and answers should be associated with that user.
 
 Guest Mode
 When an user isn't logged in and creates or answer a poll, a new User is created in the database flagged as guest.

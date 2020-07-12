@@ -1,0 +1,22 @@
+Poll:
+    - title
+    - description
+    - authRequired
+    - options: list: Option
+    - owner: user
+    - userAnswer: answer
+
+Option
+    - title
+    - answersCount
+
+Answer:
+    - user: User
+    - option: Option
+    - poll: Poll
+
+User:
+    - username
+    - isGuest
+    - polls: list: Poll
+    - answers: list: Answer

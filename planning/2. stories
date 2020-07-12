@@ -1,0 +1,49 @@
+- User creates a poll
+    - Route: /
+    - Component: Poll Form
+    - Links:
+    - Redirects:
+        - After creating - /poll/:code
+
+- User lists his polls
+    - Route: /poll
+    - Component: Poll List
+    - Links: /poll/:code
+    - Redirects:
+
+- User votes on a poll
+    - Route: /poll/:code
+    - Component: Poll View
+    - Links:
+        - /poll/:code/result
+        - If user is owner: /poll/:code/edit
+    - Redirects: 
+        - After voting - /poll/:code/result
+
+- User changes his vote
+    - Route: /poll/:code
+    - Component: Poll View
+    - Links: 
+    - Redirects: 
+        - After changing the vote - /poll/:code/result
+
+- User edits a poll
+    - Route: /poll/:code/edit
+    - Component: Poll Form
+    - Links: 
+    - Redirects: 
+        - After editing - /poll/:code
+
+- User creates an account
+    - Route: /register
+    - Component: User Registration
+    - Links: 
+    - Redirects: 
+        - After registration - /poll
+
+- User makes login
+    - Route: /login
+    - Component: User Login
+    - Links: 
+    - Redirects: 
+        - After login - /poll
