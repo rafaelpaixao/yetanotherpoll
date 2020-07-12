@@ -14,9 +14,9 @@
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "sort-imports.languages": ["javascript", "typescript", "vue"],
-    "sort-imports.on-save": true,
+    "sort-imports.on-save": false,
     "[javascript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint"
     },
     "[html]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
