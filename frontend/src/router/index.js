@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Index',
+    name: 'PollCreate',
     component: () =>
       import(/* webpackChunkName: "index" */ '../views/Index.vue'),
   },
