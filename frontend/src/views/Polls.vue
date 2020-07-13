@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <div>Route: /</div>
-  </div>
+  <div>/polls</div>
 </template>
 
 <script>
