@@ -1,3 +1,11 @@
 .DS_Store
 __pycache__
+
+# SQLite instance used in Development
 db.sqlite3
+
+# Folder configuration for Visul Studio Code
+.vscode
+
+# Python Coverage results
+.coverage
