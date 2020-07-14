@@ -30,20 +30,28 @@ const routes = [
   },
   {
     path: '/poll/:pollCode',
-    name: 'Poll',
     props: true,
     component: () =>
       import(/* webpackChunkName: "poll" */ '../views/Poll.vue'),
     children: [
       {
+        path: '',
+        name: 'PollVote',
+        props: true,
+        component: () =>
+          import(/* webpackChunkName: "pollvote" */ '../views/PollVote.vue'),
+      },
+      {
         path: 'edit',
         name: 'PollEdit',
+        props: true,
         component: () =>
           import(/* webpackChunkName: "polledit" */ '../views/PollEdit.vue'),
       },
       {
         path: 'result',
         name: 'PollResult',
+        props: true,
         component: () =>
           import(/* webpackChunkName: "pollresult" */ '../views/PollResult.vue'),
       }

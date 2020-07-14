@@ -1,11 +1,11 @@
 <template>
   <a-page>
     <template v-slot:topright>
-      <v-btn color="primary" :to="{name: 'PollVote'}">Vote on this poll</v-btn>
+      <ShareButton :poll="poll" />
     </template>
 
     <template v-slot:default>
-      <PollResultChart :poll="poll" />
+      <PollVoteForm :poll="poll" />
     </template>
 
     <template v-slot:topleft>
@@ -15,11 +15,13 @@
 </template>
 
 <script>
-import PollResultChart from '../components/PollResultChart'
+import PollVoteForm from '../components/PollVoteForm'
+import ShareButton from '../components/ShareButton'
 
 export default {
   components: {
-    PollResultChart
+    PollVoteForm,
+    ShareButton
   },
   props: {
     poll: {
