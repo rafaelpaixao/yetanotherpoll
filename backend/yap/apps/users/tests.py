@@ -1,5 +1,8 @@
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
+
+from .models import User
 
 user_data = {
     "username": "test_user",
@@ -75,3 +78,17 @@ class AuthTestCase(APITestCase):
         response = client.get("/api/user/me/", format="json")
         self.assertEqual(response.data.get("code"), "token_not_valid")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class GuestUserTestCase(TestCase):
+    """Test the guest user at model level"""
+
+    def test_guest_user_creation(self):
+        """Tries to create a guest user"""
+        user = User.objects.create_guest_user()
+        self.assertTrue(user.is_guest)
+
+    def test_non_guest_user_creation(self):
+        """Tries to create a non guest user"""
+        user = User.objects.create_user(**user_data)
+        self.assertFalse(user.is_guest)

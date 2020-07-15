@@ -33,14 +33,11 @@ def register(request):
     serializer.is_valid(raise_exception=True)
 
     # Create a new user
-    user = User(username=serializer.data.get("username"))
-    user.set_password(serializer.data.get("password"))
-    user.save()
+    user = User.objects.create_user(username=serializer.data.get("username"), password=serializer.data.get("password"),)
 
     # Generates token
     refresh_token = RefreshToken.for_user(user)
 
-    return Response({
-        'refresh': str(refresh_token),
-        'access': str(refresh_token.access_token),
-    }, status=status.HTTP_201_CREATED)
+    return Response(
+        {"refresh": str(refresh_token), "access": str(refresh_token.access_token),}, status=status.HTTP_201_CREATED
+    )
