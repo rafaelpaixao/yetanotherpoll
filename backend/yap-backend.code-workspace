@@ -1,0 +1,37 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
+    "editor.tabSize": 4,
+    "editor.rulers": [120],
+    "files.eol": "\n",
+    "python.linting.pylintArgs": [
+      "--load-plugins=pylint_django",
+      "--max-line-length=120"
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "black"
+  },
+  "extensions": {
+    "recommendations": ["ms-python.python"]
+  },
+  "launch": {
+    "configurations": [
+      {
+        "name": "yap: devserver",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/manage.py",
+        "args": ["runserver"],
+        "django": true
+      }
+    ]
+  }
+}
