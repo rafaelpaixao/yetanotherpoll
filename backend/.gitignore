@@ -9,3 +9,6 @@ db.sqlite3
 
 # Python Coverage results
 .coverage
+
+# Pipenv enviroment variables
+.env

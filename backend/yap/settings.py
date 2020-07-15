@@ -78,13 +78,10 @@ WSGI_APPLICATION = 'yap.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
+# SQLite URL for dj_database_url
+SQLITE_URL = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+DATABASE_URL = os.getenv('DATABASE_URL', SQLITE_URL)
+DATABASES = { 'default': dj_database_url.config(default=DATABASE_URL) }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -132,11 +129,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Heroku settings
 if ENVIROMENT == ENV_HEROKU:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL')
-        )
-    }
     DEBUG = bool(os.getenv('DJANGO_DEBUG', ''))
     SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', SECRET_KEY)
     ALLOWED_HOSTS = ['yetanotherpoll.herokuapp.com']
