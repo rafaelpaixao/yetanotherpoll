@@ -10,10 +10,12 @@
 
 import api from './api'
 import constants from './constants'
+import validation from './validation'
 
 export const app = {
   api,
   constants,
+  validation,
 }
 
 export default {
