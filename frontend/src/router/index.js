@@ -22,6 +22,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "register" */ '../views/Register.vue'),
   },
+  {
+    path: '/my-polls',
+    name: 'MyPolls',
+    component: () =>
+      import(/* webpackChunkName: "index" */ '../views/MyPolls.vue'),
+  },
 ]
 
 const router = new VueRouter({

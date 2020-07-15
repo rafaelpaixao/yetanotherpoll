@@ -1,5 +1,19 @@
 <template>
-  <div>
-    <h1>This is an login page</h1>
-  </div>
+  <app-layout>
+    <template slot="title">Login</template>
+
+    <template v-slot:topright>
+      <v-btn text color="accent" :to="{name: 'Register'}">Register</v-btn>
+    </template>
+
+    <LoginForm />
+  </app-layout>
 </template>
+
+<script>
+import LoginForm from '../components/LoginForm'
+
+export default {
+  components: { LoginForm },
+}
+</script>
