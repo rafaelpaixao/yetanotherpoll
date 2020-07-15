@@ -7,9 +7,11 @@
       <v-btn :to="{name: 'Register'}" active-class="no-active" small text>Register</v-btn>
     </v-app-bar>
     <v-main>
+      <app-header />
       <v-container fluid>
         <router-view />
       </v-container>
+      <app-footer />
     </v-main>
   </v-app>
 </template>
