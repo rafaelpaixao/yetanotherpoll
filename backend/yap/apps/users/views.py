@@ -33,9 +33,19 @@ def register(request):
     # Create a new user
     user = User.objects.create_user(username=serializer.data.get("username"), password=serializer.data.get("password"),)
 
-    # Generates token
-    refresh_token = RefreshToken.for_user(user)
+    return response_with_user_token(user)
 
+
+def response_with_user_token(user):
+    """Generates a API Response with access and refresh token for the given user.
+
+    Args:
+        user (User): User logged in
+
+    Returns:
+        Response: API response with tokens
+    """
+    refresh_token = RefreshToken.for_user(user)
     return Response(
         {"refresh": str(refresh_token), "access": str(refresh_token.access_token),}, status=status.HTTP_201_CREATED
     )

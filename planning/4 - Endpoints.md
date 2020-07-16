@@ -53,7 +53,7 @@
 
 ---
 
-> **POST** /poll/:id/vote/
+> **POST** /vote/:option_id
 
 - Without token:
   - Vote on poll, if poll allows vote without login, and creates a new guest user.
