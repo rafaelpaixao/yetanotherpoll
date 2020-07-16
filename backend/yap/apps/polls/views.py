@@ -9,7 +9,7 @@ from yap.apps.users.models import User
 from yap.apps.users.views import response_with_user_token
 
 from .models import Option, Poll, Vote
-from .serializers import PollReadSerializer, PollResultSerializer, PollUpdateSerializer, PollWriteSerializer
+from .serializers import PollCreateSerializer, PollResultSerializer, PollSerializer
 
 
 @api_view(["GET"])
@@ -17,7 +17,7 @@ from .serializers import PollReadSerializer, PollResultSerializer, PollUpdateSer
 def get_user_polls(request):
     """List polls authored by user"""
     polls = Poll.objects.filter(author=request.user)
-    serializer = PollReadSerializer(polls, many=True)
+    serializer = PollSerializer(polls, many=True)
     return Response(serializer.data)
 
 
@@ -63,7 +63,7 @@ def get_poll(request, poll_id):
     except Poll.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = PollReadSerializer(poll)
+    serializer = PollSerializer(poll)
     return Response(serializer.data)
 
 
@@ -85,7 +85,7 @@ def create_poll(request):
     """ Creates a new poll"""
 
     # Create poll read serializer to validate request data
-    serializer = PollReadSerializer(data=request.data)
+    serializer = PollSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
     # User is not logged in
@@ -96,7 +96,7 @@ def create_poll(request):
         author = request.user
 
     # Create poll write serializer to persist the data
-    serializer = PollWriteSerializer(data={**request.data, "author": author.pk})
+    serializer = PollCreateSerializer(data={**request.data, "author": author.pk})
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
@@ -116,7 +116,7 @@ def edit_poll(request, poll_id):
     except Poll.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = PollUpdateSerializer(poll, data=request.data)
+    serializer = PollSerializer(poll, data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
