@@ -1,61 +1,57 @@
 import { app } from '../plugins/app'
+import router from '../router'
 
 const state = {
-  token: localStorage.getItem(app.constants.LOCAL_STORAGE_TOKEN),
+  userId: null,
   username: null,
 }
 
-// If state.token has initial value, send that value to axios instance
-if (state.token) app.api.setToken(state.token)
+const parseJwt = token => JSON.parse(atob(token.split('.')[1]))
 
 export const mutations = {
-  setUsername (state, username) {
+  setUser (state, { username, userId }) {
+    state.userId = userId
     state.username = username
   },
-  setToken (state, token) {
-    state.token = token
-    app.api.setToken(token)
-    localStorage.setItem(app.constants.LOCAL_STORAGE_TOKEN, token)
+  unsetUser (state) {
+    state.userId = null
+    state.username = null
   },
 }
 
 const actions = {
-  login ({ commit }, { username, password }) {
+  login ({ dispatch }, { username, password }) {
     return new Promise((resolve, reject) => {
-      app.api.login({ username, password }).then(result => {
-        const token = result.data.access
-        commit('setToken', token)
-        commit('setUsername', username)
+      app.api.login({ username, password }).then(data => {
+        dispatch('useToken', data.access)
         resolve()
       }).catch(error => reject(error))
     })
+  },
+  register ({ dispatch }, { username, password }) {
+    return new Promise((resolve, reject) => {
+      app.api.register({ username, password }).then(data => {
+        dispatch('useToken', data.access)
+        resolve()
+      }).catch(error => reject(error))
+    })
+  },
+  useToken ({ commit, dispatch }, token) {
+    try {
+      const data = parseJwt(token)
+      commit('setUser', {
+        username: data.username,
+        userId: data.user_id,
+      })
+      app.api.useToken(token)
+    } catch (error) {
+      dispatch('logout')
+    }
   },
   logout ({ commit }) {
-    return new Promise((resolve, reject) => {
-      app.api.logout().then(() => {
-        commit('setToken', null)
-        commit('setUsername', null)
-        resolve()
-      }).catch(error => reject(error))
-    })
-  },
-  register ({ commit }, { username, password }) {
-    return new Promise((resolve, reject) => {
-      app.api.register({ username, password }).then(result => {
-        const token = result.data.access
-        commit('setToken', token)
-        commit('setUsername', username)
-        resolve()
-      }).catch(error => reject(error))
-    })
-  },
-  loadUser ({ commit }) {
-    return new Promise((resolve, reject) => {
-      app.api.user().then(result => {
-        commit('setUsername', result.data.username)
-        resolve()
-      }).catch(error => reject(error))
-    })
+    app.api.logout()
+    commit('unsetUser')
+    router.push({ name: 'Login' })
   },
 }
 

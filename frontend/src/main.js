@@ -7,7 +7,7 @@ import App from './App.vue'
 import AppPlugin from './plugins/app'
 
 Vue.config.productionTip = false
-Vue.use(AppPlugin)
+Vue.use(AppPlugin, { store })
 
 new Vue({
   router,

@@ -15,15 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .apps.users.views import current_user, register
+from .apps.polls.views import create_poll, edit_poll, get_poll, get_user_polls, vote_on_poll
+from .apps.users.views import LoginView, register
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("api/login/", LoginView.as_view(), name="login"),
     path("api/register/", register, name="register"),
-    path('api/user/me/', current_user, name='current_user'),
+    path("api/poll/", get_user_polls, name="get_user_polls"),
+    path("api/poll/create/", create_poll, name="create_poll"),
+    path("api/poll/<int:poll_id>/", get_poll, name="get_poll"),
+    path("api/poll/<int:poll_id>/edit/", edit_poll, name="edit_poll"),
+    path("api/vote/<int:option_id>/", vote_on_poll, name="vote_on_poll"),
 ]

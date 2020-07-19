@@ -1,14 +1,29 @@
-1. User can register/login to create multiple polls e see it's results
+# Use cases
 
-2. User can register/login to answer polls and edit previous answers
+Without authentication:
 
-3. User can create polls as a guest and when he register, those polls are linked to him
+1. User can create a poll
 
-4. User can answer polls as a guest and when he register, those polls are linked to him
+1. User can edit his polls
 
+1. User can see the results of his polls
 
+1. User can vote on poll
 
-Guest Mode
+1. User can change his vote
+
+1. User can share his poll
+
+1. User can create a account
+
+With authentication:
+
+1. User can log in
+
+1. User keeps his polls and votes after registration/login
+
+## Guest Mode
+
 When an user isn't logged in and creates or answer a poll, a new User is created in the database flagged as guest.
 Then a authentication Token is generated and sended to the frontend.
 This token is identical to the Token of a non-guest user, and will be kept in the Local Storage.
