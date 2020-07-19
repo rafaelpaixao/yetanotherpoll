@@ -9,7 +9,7 @@ from yap.apps.users.decorators import allow_guest_mode
 from yap.apps.users.models import User
 
 from .models import Option, Poll, Vote
-from .serializers import PollCreateSerializer, PollResultSerializer, PollSerializer
+from .serializers import PollCreateSerializer, PollResultSerializer, PollSerializer, VoteSerializer
 
 
 @api_view(["GET"])
@@ -26,49 +26,49 @@ def get_user_polls(request):
 def vote_on_poll(request, option_id):
     """Submit user vote on poll"""
 
-    # Check if the selected option exists
+    # Fetch option and raise error if it doesn't exists
     option_qs = Option.objects.filter(pk=option_id)
     if not option_qs.exists():
         return Response(status=status.HTTP_404_NOT_FOUND)
+    option = option_qs.first()
 
-    if request.user:
-        # Verify if user has voted on this poll before
-        option = option_qs.first()
-        vote = Vote.objects.filter(option__poll=option.poll, author=request.user)
-        if vote.exists():
-            # If user has voted, update option
-            vote.update(option=option)
-        else:
-            # Else, register vote
-            Vote.objects.create(option=option, author=request.user)
+    # If user has voted on this poll, update the vote
+    vote_qs = Vote.objects.filter(option__poll=option.poll, author=request.user)
+    if vote_qs.exists():
+        vote_qs.update(option=option)
+        response_status = status.HTTP_200_OK
+    else:
+        Vote.objects.create(option=option, author=request.user)
+        response_status = status.HTTP_201_CREATED
 
-        return Response(status=status.HTTP_200_OK)
+    return Response(status=response_status)
 
 
 @api_view(["GET"])
 def get_poll(request, poll_id):
     """ Fetch a single poll by given id"""
+    response_data = {
+        "poll": None,
+        "vote": None,
+    }
 
     try:
         poll = Poll.objects.get(pk=poll_id)
     except Poll.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = PollSerializer(poll)
-    return Response(serializer.data)
+    # Returns user's vote, if any
+    if request.user.pk is not None:
+        vote = Vote.objects.filter(option__poll=poll, author=request.user).first()
+        response_data["vote"] = VoteSerializer(vote).data
 
+    load_results = request.query_params.get("results", False)
+    if load_results:
+        response_data["poll"] = PollResultSerializer(poll).data
+    else:
+        response_data["poll"] = PollSerializer(poll).data
 
-@api_view(["GET"])
-def get_poll_results(request, poll_id):
-    """ Fetch a single poll results by given id"""
-
-    try:
-        poll = Poll.objects.get(pk=poll_id)
-    except Poll.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    serializer = PollResultSerializer(poll)
-    return Response(serializer.data)
+    return Response(response_data)
 
 
 @api_view(["POST"])

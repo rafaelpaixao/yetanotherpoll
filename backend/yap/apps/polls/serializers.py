@@ -3,6 +3,15 @@ from rest_framework import serializers
 from .models import Option, Poll, Vote
 
 
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = (
+            "id",
+            "option",
+        )
+
+
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option

@@ -50,7 +50,7 @@ class PollTestCase(APITestCase):
         """
         client = APIClient()
         response = client.post(f"/api/vote/{self.options[0].pk}/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Token"))
 
     def test_vote_on_as_non_guest(self):
@@ -59,7 +59,7 @@ class PollTestCase(APITestCase):
         """
         # Vote on first option
         response = self.client.post(f"/api/vote/{self.options[0].pk}/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Then, changes vote to second option
         response = self.client.post(f"/api/vote/{self.options[1].pk}/", format="json")
@@ -76,10 +76,11 @@ class PollTestCase(APITestCase):
         Fetch single poll
         """
         response = self.client.get(f"/api/poll/{self.poll.pk}/", format="json")
-        poll_data = response.data
-        self.assertEqual(poll_data.get("title"), self.poll.title)
-        self.assertEqual(poll_data.get("description"), self.poll.description)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("poll", response.data)
+        self.assertIn("vote", response.data)
+        self.assertEqual(response.data["poll"]["title"], self.poll.title)
+        self.assertEqual(response.data["poll"]["description"], self.poll.description)
 
     def test_get_poll_results(self):
         """
@@ -91,12 +92,14 @@ class PollTestCase(APITestCase):
         self.client.post(f"/api/vote/{self.options[0].pk}/", format="json")
         self.client.post(f"/api/vote/{self.options[1].pk}/", format="json")
 
-        response = self.client.get(f"/api/poll/{self.poll.pk}/results/", format="json")
-        options_data = response.data.get("options")
+        response = self.client.get(f"/api/poll/{self.poll.pk}/?results=true", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("poll", response.data)
+        self.assertIn("vote", response.data)
+        options_data = response.data["poll"]["options"]
         self.assertEqual(options_data[0].get("count_votes"), self.options[0].count_votes())
         self.assertEqual(options_data[1].get("count_votes"), self.options[1].count_votes())
         self.assertEqual(options_data[2].get("count_votes"), self.options[2].count_votes())
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_poll_as_guest(self):
         """
