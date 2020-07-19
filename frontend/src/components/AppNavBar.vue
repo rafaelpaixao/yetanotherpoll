@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app color="transparent" flat short>
+  <v-app-bar app color="transparent" flat short hide-on-scroll>
     <v-spacer />
     <v-btn :to="{name: 'Index'}" active-class="no-active" color="accent" outlined>Create a Poll</v-btn>
 

@@ -26,10 +26,7 @@ class OptionResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = (
-            "title",
-            "count_votes",
-        )
-        read_only_fields = (
+            "id",
             "title",
             "count_votes",
         )
@@ -45,6 +42,7 @@ class PollSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "options",
+            "author",
         )
         read_only_fields = (
             "id",

@@ -28,6 +28,27 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "index" */ '../views/MyPolls.vue'),
   },
+  {
+    path: '/poll/:id',
+    name: 'Vote',
+    props: true,
+    component: () =>
+      import(/* webpackChunkName: "vote" */ '../views/Vote.vue'),
+  },
+  {
+    path: '/poll/:id/edit',
+    name: 'Edit',
+    props: true,
+    component: () =>
+      import(/* webpackChunkName: "edit" */ '../views/Edit.vue'),
+  },
+  {
+    path: '/poll/:id/results',
+    name: 'Results',
+    props: true,
+    component: () =>
+      import(/* webpackChunkName: "results" */ '../views/Results.vue'),
+  },
 ]
 
 const router = new VueRouter({

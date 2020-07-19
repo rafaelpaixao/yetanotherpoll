@@ -1,12 +1,12 @@
 <template>
   <app-layout>
-    <template slot="title">Create your poll</template>
+    <template slot="title">Edit your poll</template>
 
     <template v-slot:topright>
       <v-btn text color="accent" :to="{name: 'MyPolls'}">See all your polls</v-btn>
     </template>
 
-    <PollForm @success="goToVote" />
+    <PollForm :poll-id="id" @success="goToVote" @cancel="goToVote" />
   </app-layout>
 </template>
 
@@ -16,9 +16,16 @@ import PollForm from '../components/PollForm'
 export default {
   components: { PollForm },
 
+  props: {
+    id: {
+      type: [String, Number],
+      required: true,
+    }
+  },
+
   methods: {
-    goToVote (poll) {
-      this.$router.push({ name: 'Vote', params: { id: poll.id } })
+    goToVote () {
+      this.$router.push({ name: 'Vote', params: { id: this.id } })
     }
   }
 }
