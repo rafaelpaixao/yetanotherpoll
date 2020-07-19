@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto">
     <v-card-text>
-      <v-form v-model="isValid" @submit="submit">
+      <v-form v-model="formValid" @submit.prevent="submit">
         <v-text-field
           v-model="username"
           :rules="$app.validation.username"
@@ -17,16 +17,18 @@
           label="Password"
         />
       </v-form>
+
+      <v-scale-transition>
+        <v-alert v-if="error" type="error" class="mb-5 mx-3">{{error}}</v-alert>
+      </v-scale-transition>
     </v-card-text>
-    <v-scale-transition>
-      <v-alert v-if="error" type="error" class="mb-5 mx-3">{{error}}</v-alert>
-    </v-scale-transition>
+
     <v-card-actions class="justify-end">
       <v-btn
         x-large
         rounded
         :loading="sending"
-        :disabled="sending || !isValid"
+        :disabled="sending || !formValid"
         color="success"
         @click="submit"
         class="mb-5 mr-5 px-5"
@@ -40,27 +42,31 @@ export default {
   data () {
     return {
       error: null,
-      isValid: false,
       sending: false,
+
+      formValid: false,
       username: '',
       password: '',
+
       buttonText: 'buttonText',
       dispatchTo: 'dispatchTo'
     }
   },
   methods: {
-    async submit () {
-      try {
-        await this.$store.dispatch('user/' + this.dispatchTo, {
+    submit () {
+      if (this.formValid) {
+        const data = {
           username: this.username,
           password: this.password,
-        })
-        this.$router.push({ name: 'Index' })
-      } catch (error) {
-        const data = error.response.data
-        this.error = data.detail || data.username[0] || data.password[0]
-      } finally {
-        this.sending = false
+        }
+        this.submiting = true
+        this.$store.dispatch('user/' + this.dispatchTo, data)
+          .then(() => (this.$emit('success')))
+          .catch(error => {
+            const data = error.response.data
+            this.error = data.detail || data.username[0] || data.password[0]
+          })
+          .finally(() => (this.submiting = false))
       }
     },
   },

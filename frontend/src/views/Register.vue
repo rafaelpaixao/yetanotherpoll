@@ -6,7 +6,7 @@
       <v-btn text color="accent" :to="{name: 'Login'}">Login</v-btn>
     </template>
 
-    <RegisterForm />
+    <RegisterForm @success="goToMyPolls" />
   </app-layout>
 </template>
 
@@ -15,5 +15,11 @@ import RegisterForm from '../components/RegisterForm'
 
 export default {
   components: { RegisterForm },
+
+  methods: {
+    goToMyPolls () {
+      this.$router.push({ name: 'MyPolls' })
+    }
+  }
 }
 </script>
