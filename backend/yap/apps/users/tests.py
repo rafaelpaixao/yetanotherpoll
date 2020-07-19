@@ -21,39 +21,58 @@ class RegistrationTestCase(APITestCase):
         Creates a user and verify that the response contains the access and refresh tokens.
         """
         response = self.client.post("/api/register/", data=user_data, format="json")
-        self.assertTrue(len(response.data.get("refresh")) > 0)
-        self.assertTrue(len(response.data.get("access")) > 0)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("refresh", response.data)
+        self.assertIn("access", response.data)
 
 
-class AuthTestCase(APITestCase):
-    """ Test user authorization """
+class LoginTestCase(APITestCase):
+    """ Test user login """
 
     def setUp(self):
         self.client = APIClient()
-        self.tokens = self.client.post("/api/register/", data=user_data, format="json").data
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.tokens.get("access"))
+        self.client.post("/api/register/", data=user_data, format="json")
 
-    def test_login(self):
+    def _test_login(self, data, status_code, expected_params):
+        """
+        Tries to login with invalid password.
+        """
+        response = self.client.post("/api/login/", data=data, format="json")
+        self.assertEqual(response.status_code, status_code)
+        for param in expected_params:
+            self.assertIn(param, response.data)
+
+    def test_login_success(self):
         """
         Tries to login and verify that the response contains the access and refresh tokens.
         """
-        response = self.client.post("/api/login/", data=user_data, format="json")
-        self.assertTrue(len(response.data.get("refresh")) > 0)
-        self.assertTrue(len(response.data.get("access")) > 0)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self._test_login(
+            data=user_data, status_code=status.HTTP_200_OK, expected_params=["access", "refresh"],
+        )
 
-    def test_refresh_token(self):
+    def test_login_wrong_username(self):
         """
-        Tries to generate a new access token.
+        Tries to login with invalid username.
         """
-        response = self.client.post("/api/token/refresh/", data={"refresh": self.tokens.get("refresh")}, format="json")
-        self.assertTrue(len(response.data.get("access")) > 0)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self._test_login(
+            data={"username": "someting invalid", "password": user_data["password"],},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            expected_params=["detail"],
+        )
+
+    def test_login_wrong_password(self):
+        """
+        Tries to login with invalid password.
+        """
+        self._test_login(
+            data={"password": "someting invalid", "username": user_data["username"],},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            expected_params=["detail"],
+        )
 
 
-class GuestUserTestCase(TestCase):
-    """Test the guest user at model level"""
+class UserTestCase(TestCase):
+    """Test user creation"""
 
     def test_guest_user_creation(self):
         """Tries to create a guest user"""

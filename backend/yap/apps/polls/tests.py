@@ -50,9 +50,8 @@ class PollTestCase(APITestCase):
         """
         client = APIClient()
         response = client.post(f"/api/vote/{self.options[0].pk}/", format="json")
-        self.assertTrue(len(response.data.get("refresh")) > 0)
-        self.assertTrue(len(response.data.get("access")) > 0)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.has_header("Token"))
 
     def test_vote_on_as_non_guest(self):
         """
@@ -105,8 +104,7 @@ class PollTestCase(APITestCase):
         """
         client = APIClient()
         response = client.post("/api/poll/create/", data={**poll, "options": []}, format="json")
-        self.assertTrue(len(response.data.get("refresh")) > 0)
-        self.assertTrue(len(response.data.get("access")) > 0)
+        self.assertTrue(response.has_header("Token"))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_poll_as_non_guest(self):

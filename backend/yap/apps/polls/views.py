@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from yap.apps.users.decorators import allow_guest_mode
 from yap.apps.users.models import User
-from yap.apps.users.views import response_with_user_token
 
 from .models import Option, Poll, Vote
 from .serializers import PollCreateSerializer, PollResultSerializer, PollSerializer
@@ -22,6 +22,7 @@ def get_user_polls(request):
 
 
 @api_view(["POST"])
+@allow_guest_mode()
 def vote_on_poll(request, option_id):
     """Submit user vote on poll"""
 
@@ -30,16 +31,6 @@ def vote_on_poll(request, option_id):
     if not option_qs.exists():
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # User is not logged in
-    if request.user.pk is None:
-        # Creates guest user
-        user = User.objects.create_guest_user()
-        # Register vote
-        Vote.objects.create(option_id=option_id, author=user)
-        # Return tokens
-        return response_with_user_token(user)
-
-    # User is logged in
     if request.user:
         # Verify if user has voted on this poll before
         option = option_qs.first()
@@ -81,6 +72,7 @@ def get_poll_results(request, poll_id):
 
 
 @api_view(["POST"])
+@allow_guest_mode()
 def create_poll(request):
     """ Creates a new poll"""
 
@@ -88,20 +80,10 @@ def create_poll(request):
     serializer = PollSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    # User is not logged in
-    if request.user.pk is None:
-        # Creates guest user
-        author = User.objects.create_guest_user()
-    else:
-        author = request.user
-
     # Create poll write serializer to persist the data
-    serializer = PollCreateSerializer(data={**request.data, "author": author.pk})
+    serializer = PollCreateSerializer(data={**request.data, "author": request.user.pk})
     serializer.is_valid(raise_exception=True)
     serializer.save()
-
-    if author.is_guest:
-        return response_with_user_token(author)
 
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 

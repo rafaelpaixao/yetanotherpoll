@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .apps.polls.views import create_poll, edit_poll, get_poll, get_poll_results, get_user_polls, vote_on_poll
-from .apps.users.views import register
+from .apps.users.views import LoginView, register
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/login/", LoginView.as_view(), name="login"),
     path("api/register/", register, name="register"),
     path("api/poll/", get_user_polls, name="get_user_polls"),
     path("api/poll/create/", create_poll, name="create_poll"),
