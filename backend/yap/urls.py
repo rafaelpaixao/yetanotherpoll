@@ -18,13 +18,12 @@ from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .apps.polls.views import create_poll, edit_poll, get_poll, get_poll_results, get_user_polls, vote_on_poll
-from .apps.users.views import current_user, register
+from .apps.users.views import register
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/register/", register, name="register"),
-    path("api/user/me/", current_user, name="current_user"),
     path("api/poll/", get_user_polls, name="get_user_polls"),
     path("api/poll/create/", create_poll, name="create_poll"),
     path("api/poll/<int:poll_id>/", get_poll, name="get_poll"),

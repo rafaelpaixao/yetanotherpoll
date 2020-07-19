@@ -51,34 +51,6 @@ class AuthTestCase(APITestCase):
         self.assertTrue(len(response.data.get("access")) > 0)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_current_user(self):
-        """
-        Get the current user.
-        """
-        response = self.client.get("/api/user/me/", format="json")
-        self.assertEqual(response.data.get("username"), user_data.get("username"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_current_user_without_token(self):
-        """
-        Tries to get the current user without providing a token.
-        Expects the status code to be Unauthorized.
-        """
-        client = APIClient()
-        response = client.get("/api/user/me/", format="json")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_current_user_with_invalid_token(self):
-        """
-        Tries to get the current user providing an invalid token.
-        Expects the status code to be Unauthorized.
-        """
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Bearer InvalidToken")
-        response = client.get("/api/user/me/", format="json")
-        self.assertEqual(response.data.get("code"), "token_not_valid")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
 class GuestUserTestCase(TestCase):
     """Test the guest user at model level"""

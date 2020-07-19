@@ -8,13 +8,6 @@ from .models import User
 from .serializers import AuthSerializer
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def current_user(request):
-    """Returns the current user"""
-    return Response({"username": request.user.username})
-
-
 @api_view(["POST"])
 def register(request):
     """User registration.
