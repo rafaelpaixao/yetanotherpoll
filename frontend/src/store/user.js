@@ -9,9 +9,9 @@ const state = {
 const parseJwt = token => JSON.parse(atob(token.split('.')[1]))
 
 export const mutations = {
-  setUser (state, { usename, userId }) {
+  setUser (state, { username, userId }) {
     state.userId = userId
-    state.username = usename
+    state.username = username
   },
   unsetUser (state) {
     state.userId = null
