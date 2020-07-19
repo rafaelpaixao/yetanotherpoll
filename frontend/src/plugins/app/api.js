@@ -1,9 +1,9 @@
 import axios from 'axios'
+import { tokenStorage } from './storage'
 
 const URLS = {
-  LOGIN: 'token/',
+  LOGIN: 'login/',
   REGISTER: 'register/',
-  USER: 'user/me/',
 }
 
 class Api {
@@ -11,21 +11,33 @@ class Api {
     this.axios = axios.create()
   }
 
+  addResponseInterceptors ({ success = null, error = null }) {
+    this.axios.interceptors.response.use(
+      success,
+      error,
+    )
+  }
+
   setBaseUrl (baseURL) {
     this.axios.defaults.baseURL = baseURL
   }
 
-  setToken (token) {
-    this.axios.defaults.headers.common = {
-      Authorization: 'Bearer ' + token
+  useToken (token) {
+    if (token) {
+      this.token = token
+      this.axios.defaults.headers.common = {
+        Authorization: 'Bearer ' + token
+      }
+      tokenStorage.set(token)
+    } else {
+      this.logout()
     }
   }
 
   logout () {
-    return new Promise((resolve, reject) => {
-      this.axios.defaults.headers.common = {}
-      resolve()
-    })
+    this.axios.defaults.headers.common = {}
+    this.token = null
+    tokenStorage.delete()
   }
 
   login (data) {
@@ -34,10 +46,6 @@ class Api {
 
   register (data) {
     return this.axios.post(URLS.REGISTER, data)
-  }
-
-  getUser () {
-    return this.axios.get(URLS.USER)
   }
 }
 
