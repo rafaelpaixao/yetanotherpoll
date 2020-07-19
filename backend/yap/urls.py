@@ -22,8 +22,7 @@ from .apps.users.views import current_user, register
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/register/", register, name="register"),
     path("api/user/me/", current_user, name="current_user"),
     path("api/poll/", get_user_polls, name="get_user_polls"),

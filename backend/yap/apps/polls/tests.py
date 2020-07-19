@@ -30,7 +30,7 @@ class PollTestCase(APITestCase):
         self.poll = Poll.objects.create(**poll, author=self.user)
         self.options = [Option.objects.create(**option, poll=self.poll) for option in options]
         self.client = APIClient()
-        self.tokens = self.client.post("/api/token/", data=user_data, format="json").data
+        self.tokens = self.client.post("/api/login/", data=user_data, format="json").data
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.tokens.get("access"))
 
     def test_get_user_polls(self):

@@ -38,7 +38,7 @@ class AuthTestCase(APITestCase):
         """
         Tries to login and verify that the response contains the access and refresh tokens.
         """
-        response = self.client.post("/api/token/", data=user_data, format="json")
+        response = self.client.post("/api/login/", data=user_data, format="json")
         self.assertTrue(len(response.data.get("refresh")) > 0)
         self.assertTrue(len(response.data.get("access")) > 0)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
