@@ -9,7 +9,7 @@ from yap.apps.users.decorators import allow_guest_mode
 from yap.apps.users.models import User
 
 from .models import Option, Poll, Vote
-from .serializers import PollCreateSerializer, PollResultSerializer, PollSerializer, VoteSerializer
+from .serializers import PollResultSerializer, PollSerializer, VoteSerializer
 
 
 @api_view(["GET"])
@@ -76,12 +76,7 @@ def get_poll(request, poll_id):
 def create_poll(request):
     """ Creates a new poll"""
 
-    # Create poll read serializer to validate request data
-    serializer = PollSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-
-    # Create poll write serializer to persist the data
-    serializer = PollCreateSerializer(data={**request.data, "author": request.user.pk})
+    serializer = PollSerializer(data={**request.data, **{"author": request.user.pk}})
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
@@ -98,7 +93,7 @@ def edit_poll(request, poll_id):
     except Poll.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = PollSerializer(poll, data=request.data)
+    serializer = PollSerializer(poll, data={**request.data, **{"author": request.user.pk}})
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
