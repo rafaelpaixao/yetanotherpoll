@@ -2,20 +2,22 @@
   <v-app>
     <AppNavBar />
     <v-main>
-      <app-header />
+      <AppHeader />
       <v-container fluid>
         <router-view />
       </v-container>
-      <app-footer />
+      <AppFooter />
     </v-main>
   </v-app>
 </template>
 
 <script>
+import AppFooter from './components/AppFooter'
+import AppHeader from './components/AppHeader'
 import AppNavBar from './components/AppNavBar'
 
 export default {
-  components: { AppNavBar }
+  components: { AppFooter, AppHeader, AppNavBar }
 }
 </script>
 
