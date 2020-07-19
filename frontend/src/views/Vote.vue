@@ -1,16 +1,21 @@
 <template>
   <app-layout>
-    <template v-slot:title>Vote on poll</template>
-
+    <template v-slot:topleft>
+      <v-btn text color="accent" :to="{name: 'MyPolls'}">My Polls</v-btn>
+    </template>
+    <template v-slot:topright>
+      <ShareButton :poll-id="id"/>
+    </template>
     <VoteForm :poll-id="id" @success="goToResults" @edit="goToEdit" />
   </app-layout>
 </template>
 
 <script>
 import VoteForm from '../components/VoteForm'
+import ShareButton from '../components/ShareButton'
 
 export default {
-  components: { VoteForm },
+  components: { ShareButton, VoteForm },
 
   props: {
     id: {
