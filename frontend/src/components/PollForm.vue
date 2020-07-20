@@ -12,7 +12,7 @@
       auto-grow
       rows="1"
       placeholder="Type your question here"
-      name="poll-title"
+      id="inputPollTitle"
     ></v-textarea>
 
     <v-textarea
@@ -22,7 +22,7 @@
       auto-grow
       rows="1"
       placeholder="Brief explanation about the poll"
-      name="poll-description"
+      id="inputPollDescription"
     ></v-textarea>
 
     <div class="pb-3">
@@ -36,9 +36,9 @@
         @click:append="removeOption(i)"
         append-icon="mdi-close"
         placeholder="Enter poll option"
-        name="poll-option"
+        :id="'inputPollOption'+i"
       ></v-text-field>
-      <v-btn text color="success" class="mr-4" @click="addOption">Add Option</v-btn>
+      <v-btn id="btnAddOption" text color="success" class="mr-4" @click="addOption">Add Option</v-btn>
     </div>
 
     <div class="pb-5">
@@ -51,6 +51,7 @@
     <div class="d-flex my-5" :class="editing ? 'justify-space-between': 'justify-end'">
       <v-btn v-if="editing" text :disabled="submiting" color="secondary" @click="cancel">Cancel</v-btn>
       <v-btn
+        id="btnSubmitPollForm"
         :loading="submiting"
         :disabled="submiting || !formValid"
         color="success"

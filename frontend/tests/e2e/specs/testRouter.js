@@ -15,9 +15,4 @@ describe('Test router', () => {
     cy.visit('/register')
     cy.contains('h6', 'Register')
   })
-
-  it('Visits My Polls', () => {
-    cy.visit('/my-polls')
-    cy.contains('h6', 'Your polls')
-  })
 })
