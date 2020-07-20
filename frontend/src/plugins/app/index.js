@@ -27,8 +27,8 @@ export default {
     app.api.addResponseInterceptors({
       success: response => {
         // Use access token, if response has one
-        if (response.headers.Token) {
-          options.store.dispatch('user/useToken', response.headers.Token)
+        if (response.headers.token) {
+          options.store.dispatch('user/useToken', response.headers.token)
         }
         // Return data directly
         return response.data

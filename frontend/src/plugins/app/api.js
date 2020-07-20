@@ -4,6 +4,7 @@ import { tokenStorage } from './storage'
 const URLS = {
   LOGIN: 'login/',
   REGISTER: 'register/',
+  REGISTER_GUEST: 'register_guest/',
   POLL_LIST: 'poll/',
   POLL_CREATE: 'poll/create/',
   POLL: id => `poll/${id}/`,
@@ -52,6 +53,10 @@ class Api {
 
   register (data) {
     return this.axios.post(URLS.REGISTER, data)
+  }
+
+  registerGuest (data) {
+    return this.axios.post(URLS.REGISTER_GUEST, data)
   }
 
   createPoll (data) {

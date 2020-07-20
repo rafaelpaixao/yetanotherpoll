@@ -140,6 +140,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # https://pypi.org/project/django-cors-headers/
 CORS_ORIGIN_WHITELIST = ["http://localhost:8080"]
+CORS_EXPOSE_HEADERS = ["Token"]
 
 # Heroku settings
 if ENVIROMENT == ENV_HEROKU:
