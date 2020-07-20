@@ -48,8 +48,9 @@ export default {
       username: '',
       password: '',
 
-      buttonText: 'buttonText',
-      dispatchTo: 'dispatchTo'
+      // Must be setted
+      // buttonText: 'buttonText',
+      // dispatchTo: 'dispatchTo'
     }
   },
   methods: {

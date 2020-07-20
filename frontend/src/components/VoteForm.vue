@@ -1,7 +1,7 @@
 <template>
   <app-loader v-if="loadingPoll" />
 
-  <v-alert v-else-if="loadError" type="error">{{loadError}}</v-alert>
+  <v-alert v-else-if="loadError" type="error">Sorry, this poll is unavailable</v-alert>
 
   <v-card v-else class="mx-auto">
     <v-card-title>{{poll.title}}</v-card-title>
@@ -22,7 +22,18 @@
 
     <v-alert v-if="!voting && voteError" type="error">{{voteError}}</v-alert>
 
-    <v-card-actions class="justify-end pb-5 px-5">
+    <v-alert
+      v-if="poll.requires_non_guest_to_vote && !isLoggedIn"
+      type="error"
+      class="mx-5 mb-5"
+    >Sorry, but this poll requires authentication to vote. Please create a account or log in.</v-alert>
+
+    <v-card-actions
+      v-else
+      class="pb-5 px-5"
+      :class="isOwner ? 'justify-space-between': 'justify-end'"
+    >
+      <v-btn v-if="isOwner" x-large text @click="$emit('edit')" color="accent" class="px-5">Edit</v-btn>
       <v-btn
         x-large
         rounded
@@ -37,6 +48,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   props: {
     pollId: {
@@ -56,6 +69,16 @@ export default {
       poll: null,
       selectedOption: null,
     }
+  },
+
+  computed: {
+    isOwner () {
+      return this.userId === this.poll.author
+    },
+    isLoggedIn () {
+      return !!this.userId && !this.isGuest
+    },
+    ...mapState('user', ['userId', 'isGuest'])
   },
 
   mounted () {

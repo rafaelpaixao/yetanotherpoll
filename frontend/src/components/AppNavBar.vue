@@ -3,7 +3,7 @@
     <v-spacer />
     <v-btn :to="{name: 'Index'}" active-class="no-active" color="accent" outlined>Create a Poll</v-btn>
 
-    <template v-if="username">
+    <template v-if="username && !isGuest">
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="transparent" rounded depressed class="ml-5 pr-0" v-bind="attrs" v-on="on">
@@ -33,7 +33,7 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   computed: {
-    ...mapState('user', ['username'])
+    ...mapState('user', ['username', 'isGuest'])
   },
 
   methods: {

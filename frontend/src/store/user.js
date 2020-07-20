@@ -2,6 +2,7 @@ import { app } from '../plugins/app'
 import router from '../router'
 
 const state = {
+  isGuest: false,
   userId: null,
   username: null,
 }
@@ -9,11 +10,13 @@ const state = {
 const parseJwt = token => JSON.parse(atob(token.split('.')[1]))
 
 export const mutations = {
-  setUser (state, { username, userId }) {
+  setUser (state, { isGuest, username, userId }) {
+    state.isGuest = isGuest
     state.userId = userId
     state.username = username
   },
   unsetUser (state) {
+    state.isGuest = false
     state.userId = null
     state.username = null
   },
@@ -36,10 +39,20 @@ const actions = {
       }).catch(error => reject(error))
     })
   },
+  registerGuest ({ dispatch }, { username, password }) {
+    return new Promise((resolve, reject) => {
+      app.api.registerGuest({ username, password }).then(data => {
+        dispatch('useToken', data.access)
+        resolve()
+      }).catch(error => reject(error))
+    })
+  },
   useToken ({ commit, dispatch }, token) {
     try {
       const data = parseJwt(token)
+      console.log(data)
       commit('setUser', {
+        isGuest: data.is_guest,
         username: data.username,
         userId: data.user_id,
       })

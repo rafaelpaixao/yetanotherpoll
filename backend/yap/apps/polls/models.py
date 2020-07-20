@@ -15,7 +15,7 @@ class Poll(TimeStampedModel):
         default=False, help_text="To vote on this poll, user must be logged in and not be a Guest.",
     )
 
-    author = models.ForeignKey(User, models.PROTECT, related_name="polls")
+    author = models.ForeignKey(User, models.CASCADE, related_name="polls")
 
     def __str__(self):
         return self.title
@@ -27,7 +27,7 @@ class Option(TimeStampedModel):
     """
 
     title = models.CharField(max_length=120)
-    poll = models.ForeignKey(Poll, models.PROTECT, related_name="options")
+    poll = models.ForeignKey(Poll, models.CASCADE, related_name="options")
 
     def count_votes(self):
         """Count total votes on option.
@@ -46,8 +46,8 @@ class Vote(TimeStampedModel):
     Stores a vote by referency the selected option and the user.
     """
 
-    option = models.ForeignKey(Option, models.PROTECT, related_name="votes")
-    author = models.ForeignKey(User, models.PROTECT, related_name="votes")
+    option = models.ForeignKey(Option, models.CASCADE, related_name="votes")
+    author = models.ForeignKey(User, models.CASCADE, related_name="votes")
 
     def __str__(self):
         return f"{self.option.poll} - {self.option}"
