@@ -1,7 +1,7 @@
 <template>
   <app-loader v-if="loadingPoll" />
 
-  <v-alert v-else-if="loadError" type="error">{{loadError}}</v-alert>
+  <v-alert v-else-if="loadError" type="error">Sorry, this poll is unavailable</v-alert>
 
   <v-card v-else class="mx-auto">
     <v-card-title>{{poll.title}}</v-card-title>
