@@ -1,23 +1,23 @@
-import { mutations } from '../../../src/store/user'
-import { app } from '../../../src/plugins/app'
+import { mutations, state } from '../../../src/store/user'
 
 // destructure assign `mutations`
-const { setUsername, setToken } = mutations
+const { setUser, unsetUser } = mutations
 
 const TEST_USERNAME = 'test_username'
-const TEST_TOKEN = 'test_token'
+const TEST_USER_ID = 'test_user_id'
+const TEST_USER_IS_GUEST = true
 
 describe('User Mutations', () => {
-  it('Set username', () => {
-    const state = { username: null }
-    setUsername(state, TEST_USERNAME)
+  it('Set user', () => {
+    setUser(state, { username: TEST_USERNAME, userId: TEST_USER_ID, isGuest: TEST_USER_IS_GUEST })
     expect(state.username).toMatch(TEST_USERNAME)
+    expect(state.userId).toMatch(TEST_USER_ID)
+    expect(state.isGuest).toBeTruthy()
   })
-  it('Set token', () => {
-    const state = { username: null }
-    setToken(state, TEST_TOKEN)
-    expect(state.token).toMatch(TEST_TOKEN)
-    // expect(localStorage(app.constants.LOCAL_STORAGE_TOKEN)).toMatch(TEST_TOKEN)
-    expect(app.api.axios.defaults.headers.common.Authorization).toMatch('Bearer ' + TEST_TOKEN)
+  it('Unset user', () => {
+    unsetUser(state)
+    expect(state.username).toBeNull()
+    expect(state.userId).toBeNull()
+    expect(state.isGuest).toBeFalsy()
   })
 })

@@ -1,7 +1,7 @@
 import { app } from '../plugins/app'
 import router from '../router'
 
-const state = {
+export const state = {
   isGuest: false,
   userId: null,
   username: null,
