@@ -6,7 +6,7 @@
       <v-btn text color="accent" :to="{name: 'MyPolls'}">See all your polls</v-btn>
     </template>
 
-    <PollForm :poll-id="id" @success="goToVote" @cancel="goToVote" />
+    <PollForm :poll-id="id" @success="goToVote" @cancel="goToVote" @delete="goToMyPolls" />
   </app-layout>
 </template>
 
@@ -26,6 +26,9 @@ export default {
   methods: {
     goToVote () {
       this.$router.push({ name: 'Vote', params: { id: this.id } })
+    },
+    goToMyPolls () {
+      this.$router.push({ name: 'MyPolls' })
     }
   }
 }

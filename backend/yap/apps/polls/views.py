@@ -98,3 +98,18 @@ def edit_poll(request, poll_id):
     serializer.save()
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_poll(request, poll_id):
+    """ Deletes a poll"""
+
+    try:
+        poll = Poll.objects.get(pk=poll_id, author=request.user)
+    except Poll.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    poll.delete()
+
+    return Response(status=status.HTTP_200_OK)

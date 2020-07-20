@@ -22,7 +22,8 @@
 
     <v-alert v-if="!voting && voteError" type="error">{{voteError}}</v-alert>
 
-    <v-card-actions class="justify-end pb-5 px-5">
+    <v-card-actions class="pb-5 px-5" :class="isOwner ? 'justify-space-between': 'justify-end'">
+      <v-btn v-if="isOwner" x-large text @click="$emit('edit')" color="accent" class="px-5">Edit</v-btn>
       <v-btn
         x-large
         rounded
@@ -37,6 +38,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   props: {
     pollId: {
@@ -56,6 +59,13 @@ export default {
       poll: null,
       selectedOption: null,
     }
+  },
+
+  computed: {
+    isOwner () {
+      return this.userId === this.poll.author
+    },
+    ...mapState('user', ['userId'])
   },
 
   mounted () {

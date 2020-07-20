@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .apps.polls.views import create_poll, edit_poll, get_poll, get_user_polls, vote_on_poll
+from .apps.polls.views import (create_poll, delete_poll, edit_poll, get_poll,
+                               get_user_polls, vote_on_poll)
 from .apps.users.views import LoginView, register, register_guest
 
 urlpatterns = [
@@ -29,5 +30,6 @@ urlpatterns = [
     path("api/poll/create/", create_poll, name="create_poll"),
     path("api/poll/<int:poll_id>/", get_poll, name="get_poll"),
     path("api/poll/<int:poll_id>/edit/", edit_poll, name="edit_poll"),
+    path("api/poll/<int:poll_id>/delete/", delete_poll, name="delete_poll"),
     path("api/vote/<int:option_id>/", vote_on_poll, name="vote_on_poll"),
 ]

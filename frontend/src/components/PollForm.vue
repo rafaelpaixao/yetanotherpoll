@@ -41,7 +41,7 @@
       <v-btn text color="success" class="mr-4" @click="addOption">Add Option</v-btn>
     </div>
 
-    <div class="d-flex justify-end my-5">
+    <div class="d-flex my-5" :class="editing ? 'justify-space-between': 'justify-end'">
       <v-btn v-if="editing" text :disabled="submiting" color="secondary" @click="cancel">Cancel</v-btn>
       <v-btn
         :loading="submiting"
@@ -49,6 +49,17 @@
         color="success"
         @click="submit"
       >{{ submitButtonText }}</v-btn>
+    </div>
+
+    <div v-if="editing" class="d-flex justify-center mt-5 pt-5">
+      <v-btn
+        text
+        small
+        color="error"
+        :loading="deleting"
+        :disabled="deleting"
+        @click="deletePoll"
+      >Delete this poll</v-btn>
     </div>
   </v-form>
 </template>
@@ -75,7 +86,10 @@ export default {
         title: null,
         description: null,
         options: []
-      }
+      },
+
+      deleting: false,
+      deleteError: null,
     }
   },
 
@@ -100,7 +114,7 @@ export default {
   methods: {
     loadPoll () {
       this.$app.api.fetchPoll(this.pollId)
-        .then(poll => (this.poll = poll))
+        .then(data => (this.poll = data.poll))
         .catch(error => (this.error = error))
         .finally(() => (this.loadingPoll = false))
     },
@@ -121,6 +135,13 @@ export default {
     },
     cancel () {
       this.$emit('cancel')
+    },
+    deletePoll () {
+      this.deleting = true
+      this.$app.api.deletePoll(this.poll.id)
+        .then(poll => (this.$emit('delete')))
+        .catch(error => (this.deleteError = error))
+        .finally(() => (this.deleting = false))
     }
   }
 }

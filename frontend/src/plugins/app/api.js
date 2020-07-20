@@ -8,8 +8,9 @@ const URLS = {
   POLL_LIST: 'poll/',
   POLL_CREATE: 'poll/create/',
   POLL: id => `poll/${id}/`,
-  POLL_EDIT: id => `poll/${id}/edit`,
+  POLL_EDIT: id => `poll/${id}/edit/`,
   POLL_RESULTS: id => `poll/${id}?results=true`,
+  POLL_DELETE: id => `poll/${id}/delete/`,
   VOTE: id => `vote/${id}/`,
 }
 
@@ -80,7 +81,7 @@ class Api {
   }
 
   _editPoll (data) {
-    return this.axios.post(URLS.POLL_EDIT(data.id), data)
+    return this.axios.put(URLS.POLL_EDIT(data.id), data)
   }
 
   submitPoll (data) {
@@ -89,6 +90,10 @@ class Api {
 
   submitVote (optionId) {
     return this.axios.post(URLS.VOTE(optionId))
+  }
+
+  deletePoll (id) {
+    return this.axios.delete(URLS.POLL_DELETE(id))
   }
 }
 
