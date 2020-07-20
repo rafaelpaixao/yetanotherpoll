@@ -22,7 +22,17 @@
 
     <v-alert v-if="!voting && voteError" type="error">{{voteError}}</v-alert>
 
-    <v-card-actions class="pb-5 px-5" :class="isOwner ? 'justify-space-between': 'justify-end'">
+    <v-alert
+      v-if="poll.requires_non_guest_to_vote && !isLoggedIn"
+      type="error"
+      class="mx-5 mb-5"
+    >Sorry, but this poll requires authentication to vote. Please create a account or log in.</v-alert>
+
+    <v-card-actions
+      v-else
+      class="pb-5 px-5"
+      :class="isOwner ? 'justify-space-between': 'justify-end'"
+    >
       <v-btn v-if="isOwner" x-large text @click="$emit('edit')" color="accent" class="px-5">Edit</v-btn>
       <v-btn
         x-large
@@ -65,7 +75,10 @@ export default {
     isOwner () {
       return this.userId === this.poll.author
     },
-    ...mapState('user', ['userId'])
+    isLoggedIn () {
+      return !!this.userId && !this.isGuest
+    },
+    ...mapState('user', ['userId', 'isGuest'])
   },
 
   mounted () {

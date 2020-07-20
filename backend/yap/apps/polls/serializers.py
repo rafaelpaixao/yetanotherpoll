@@ -47,6 +47,7 @@ class PollSerializer(WritableNestedModelSerializer):
             "description",
             "options",
             "author",
+            "requires_non_guest_to_vote",
         )
 
 

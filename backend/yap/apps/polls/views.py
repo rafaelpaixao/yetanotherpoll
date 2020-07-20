@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from yap.apps.users.decorators import allow_guest_mode
 from yap.apps.users.models import User
 
+from .exceptions import PollRequiresAuthToVote
 from .models import Option, Poll, Vote
 from .serializers import PollResultSerializer, PollSerializer, VoteSerializer
 
@@ -31,6 +32,10 @@ def vote_on_poll(request, option_id):
     if not option_qs.exists():
         return Response(status=status.HTTP_404_NOT_FOUND)
     option = option_qs.first()
+
+    # If poll requires user, verify that request has one
+    if option.poll.requires_non_guest_to_vote and (not request.user.pk or request.user.is_guest):
+        raise PollRequiresAuthToVote()
 
     # If user has voted on this poll, update the vote
     vote_qs = Vote.objects.filter(option__poll=option.poll, author=request.user)

@@ -27,15 +27,19 @@ def allow_guest_mode():
     def decorator(func):
         @wraps(func, assigned=WRAPPER_ASSIGNMENTS)
         def inner(request, *args, **kwargs):
+            # Indicates that a user was created here
+            created = False
+
             # If there is no user, create a guest
             if not request.user.pk:
                 user = User.objects.create_guest_user()
                 request.user = user
+                created = True
 
             response = func(request, *args, **kwargs)
 
-            # If user is guest, add token to response header
-            if request.user.is_guest:
+            # If user was created, add token to response header
+            if created:
                 token = TokenSerializer().get_token(user)
                 response["Token"] = str(token.access_token)
 

@@ -25,7 +25,7 @@
       name="poll-description"
     ></v-textarea>
 
-    <div class="pb-5">
+    <div class="pb-3">
       <v-subheader class="px-0">OPTIONS</v-subheader>
       <v-text-field
         v-for="(option, i) in poll.options"
@@ -39,6 +39,13 @@
         name="poll-option"
       ></v-text-field>
       <v-btn text color="success" class="mr-4" @click="addOption">Add Option</v-btn>
+    </div>
+
+    <div class="pb-5">
+      <v-checkbox
+        v-model="poll.requires_non_guest_to_vote"
+        label="Requires authentication to vote?"
+      />
     </div>
 
     <div class="d-flex my-5" :class="editing ? 'justify-space-between': 'justify-end'">
@@ -85,7 +92,8 @@ export default {
       poll: {
         title: null,
         description: null,
-        options: []
+        options: [],
+        requires_non_guest_to_vote: false,
       },
 
       deleting: false,
