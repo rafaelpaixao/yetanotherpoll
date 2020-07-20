@@ -3,60 +3,126 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from yap.apps.users.models import User
+from yap.apps.users.tests import UserSetUp
 
 from .models import Option, Poll, Vote
 from .serializers import PollSerializer
 
-user_data = {
-    "username": "test_user",
-    "password": "super_secret_password",
-}
-
-poll = {
+POLL_DATA = {
     "title": "Test poll 1",
     "description": "Test poll description",
 }
-options = [
+
+OPTIONS_DATA = [
     {"title": "Option A"},
     {"title": "Option B"},
     {"title": "Option C"},
 ]
 
+POLL_WITH_OPTIONS = {**POLL_DATA, **{"options": OPTIONS_DATA}}
 
-class PollTestCase(APITestCase):
-    """ Test user registration """
+
+class PollSetUp(UserSetUp):
+    def setUp(self):
+        super().setUp()
+        self.poll = Poll.objects.create(**POLL_DATA, author=self.user)
+        self.options = [Option.objects.create(**option, poll=self.poll) for option in OPTIONS_DATA]
+
+
+class CreatePollWithoutUserTestCase(APITestCase):
+    """ Test operations that doesn't require an user to be performed """
 
     def setUp(self):
-        self.user = User.objects.create_user(**user_data)
-        self.poll = Poll.objects.create(**poll, author=self.user)
-        self.options = [Option.objects.create(**option, poll=self.poll) for option in options]
         self.client = APIClient()
-        self.tokens = self.client.post("/api/login/", data=user_data, format="json").data
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.tokens.get("access"))
 
-    def test_get_user_polls(self):
+    def test_create_poll_without_user(self):
         """
-        List all polls authored by user
+        Creates a poll without an user and check if response header has a token
         """
-        response = self.client.get("/api/poll/", format="json")
-        data = response.data[0]
-        self.assertEqual(data.get("title"), self.poll.title)
-        self.assertEqual(data.get("description"), self.poll.description)
-        self.assertEqual(data.get("options")[0].get("title"), self.options[0].title)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.post("/api/poll/create/", data=POLL_WITH_OPTIONS, format="json")
+        self.assertTrue(response.has_header("Token"))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("id", response.data)
 
+
+class VoteOnPollWithoutUserTestCase(PollSetUp, APITestCase):
     def test_vote_on_poll_as_guest(self):
         """
-        Vote on poll without authentication
+        Vote on poll without an user and check if response header has a token
         """
         client = APIClient()
         response = client.post(f"/api/vote/{self.options[0].pk}/", format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.has_header("Token"))
 
-    def test_vote_on_as_non_guest(self):
+
+class EditPollTestCase(PollSetUp, APITestCase):
+    """ Test poll update """
+
+    def setUp(self):
+        super().setUp()
+        self.poll_data = PollSerializer(Poll.objects.get(pk=self.poll.pk)).data
+
+    def _edit_poll(self):
+        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=self.poll_data, format="json",)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.poll_data)
+
+    def test_edit_poll_title(self):
         """
-        Vote on poll with authentication
+        Changes the title of a poll
+        """
+        self.poll_data["title"] = "Poll new title"
+        self._edit_poll()
+
+    def test_edit_poll_description(self):
+        """
+        Changes the description of a poll
+        """
+        self.poll_data["description"] = "Poll new description"
+        self._edit_poll()
+
+    def test_edit_option_title(self):
+        """
+        Changes title of first option
+        """
+        self.poll_data["options"][0]["title"] = "Option new title"
+        self._edit_poll()
+
+    def test_add_option(self):
+        """
+        Add new option to the poll
+        """
+        self.poll_data["options"].append({"title": "New Option!!!!"})
+        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=self.poll_data, format="json",)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["options"]), len(self.poll_data["options"]))
+
+    def test_remove_option(self):
+        """
+        Remove option from poll
+        """
+        self.poll_data["options"].pop()
+        self._edit_poll()
+
+
+class CreatePollWithUserTestCase(UserSetUp, APITestCase):
+    """ Test operations that doesn't require an user to be performed """
+
+    def test_create_poll_with_user(self):
+        """
+        Creates a poll with an user
+        """
+        response = self.client.post("/api/poll/create/", data=POLL_WITH_OPTIONS, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get("title"), POLL_WITH_OPTIONS.get("title"))
+        self.assertEqual(response.data.get("description"), POLL_WITH_OPTIONS.get("description"))
+
+
+class VoteOnPollWithUserTestCase(PollSetUp, APITestCase):
+    def test_vote_on_poll_with_user(self):
+        """
+        Vote on poll with an user
         """
         # Vote on first option
         response = self.client.post(f"/api/vote/{self.options[0].pk}/", format="json")
@@ -72,6 +138,23 @@ class PollTestCase(APITestCase):
         self.assertEqual(vote_qs.count(), 1)
         self.assertEqual(vote_qs.first().option.pk, self.options[1].pk)
 
+
+class GetPollsTestCase(PollSetUp, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.vote = Vote.objects.create(option=self.options[0], author=self.user)
+
+    def test_get_user_polls(self):
+        """
+        List all polls authored by user
+        """
+        response = self.client.get("/api/poll/", format="json")
+        data = response.data[0]
+        self.assertEqual(data.get("title"), self.poll.title)
+        self.assertEqual(data.get("description"), self.poll.description)
+        self.assertEqual(data.get("options")[0].get("title"), self.options[0].title)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_get_poll(self):
         """
         Fetch single poll
@@ -80,19 +163,11 @@ class PollTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("poll", response.data)
         self.assertIn("vote", response.data)
-        self.assertEqual(response.data["poll"]["title"], self.poll.title)
-        self.assertEqual(response.data["poll"]["description"], self.poll.description)
 
     def test_get_poll_results(self):
         """
         Fetch single poll results
         """
-
-        # Add a few votes
-        self.client.post(f"/api/vote/{self.options[0].pk}/", format="json")
-        self.client.post(f"/api/vote/{self.options[0].pk}/", format="json")
-        self.client.post(f"/api/vote/{self.options[1].pk}/", format="json")
-
         response = self.client.get(f"/api/poll/{self.poll.pk}/?results=true", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("poll", response.data)
@@ -102,100 +177,11 @@ class PollTestCase(APITestCase):
         self.assertEqual(options_data[1].get("count_votes"), self.options[1].count_votes())
         self.assertEqual(options_data[2].get("count_votes"), self.options[2].count_votes())
 
-    def test_create_poll_as_guest(self):
-        """
-        Creates a poll as guest user
-        """
-        client = APIClient()
-        response = client.post("/api/poll/create/", data={**poll, "options": []}, format="json")
-        self.assertTrue(response.has_header("Token"))
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_poll_as_non_guest(self):
+class DeletePollTestCase(PollSetUp, APITestCase):
+    def test_delete_poll(self):
         """
-        Creates a poll
+        Tries to delete the poll
         """
-        response = self.client.post("/api/poll/create/", data={**poll, "options": []}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data.get("title"), poll.get("title"))
-        self.assertEqual(response.data.get("description"), poll.get("description"))
-
-    def test_edit_poll(self):
-        """
-        Edits a poll
-        """
-        new_title = "Poll new title"
-        response = self.client.put(
-            f"/api/poll/{self.poll.pk}/edit/",
-            data={"title": new_title, "description": poll.get("description"), "options": []},
-            format="json",
-        )
+        response = self.client.delete(f"/api/poll/{self.poll.pk}/delete/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get("title"), new_title)
-        self.assertEqual(response.data.get("id"), self.poll.pk)
-
-
-class EditPollTestCase(APITestCase):
-    """ Test user registration """
-
-    def setUp(self):
-        self.user = User.objects.create_user(**user_data)
-        self.poll = Poll.objects.create(**poll, author=self.user)
-        self.options = [Option.objects.create(**option, poll=self.poll) for option in options]
-        self.client = APIClient()
-        self.tokens = self.client.post("/api/login/", data=user_data, format="json").data
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.tokens.get("access"))
-
-    def test_edit_poll_title(self):
-        """
-        Changes the title of a poll
-        """
-        poll_data = PollSerializer(Poll.objects.get(pk=self.poll.pk)).data
-        poll_data["title"] = "Poll new title"
-
-        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=poll_data, format="json",)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get("id"), poll_data["id"])
-        self.assertEqual(response.data.get("title"), poll_data["title"])
-
-    def test_edit_poll_description(self):
-        """
-        Changes the description of a poll
-        """
-        poll_data = PollSerializer(Poll.objects.get(pk=self.poll.pk)).data
-        poll_data["description"] = "Poll new description"
-
-        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=poll_data, format="json",)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data.get("id"), poll_data["id"])
-        self.assertEqual(response.data.get("description"), poll_data["description"])
-
-    def test_edit_option_title(self):
-        """
-        Changes title of first option
-        """
-        poll_data = PollSerializer(Poll.objects.get(pk=self.poll.pk)).data
-        poll_data["options"][0]["title"] = "Option new title"
-        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=poll_data, format="json",)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, poll_data)
-
-    def test_add_option(self):
-        """
-        Add new option to the poll
-        """
-        poll_data = PollSerializer(Poll.objects.get(pk=self.poll.pk)).data
-        poll_data["options"].append({"title": "New Option!!!!"})
-        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=poll_data, format="json",)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["options"]), len(poll_data["options"]))
-
-    def test_remove_option(self):
-        """
-        Remove option from poll
-        """
-        poll_data = PollSerializer(Poll.objects.get(pk=self.poll.pk)).data
-        poll_data["options"].pop()
-        response = self.client.put(f"/api/poll/{self.poll.pk}/edit/", data=poll_data, format="json",)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["options"]), len(poll_data["options"]))

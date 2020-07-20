@@ -35,7 +35,7 @@ export default {
       },
       error: error => {
         // Logout user if response has unauthorized status
-        if (error.response.status === 401) options.store.dispatch('user/logout')
+        if (error.response && error.response.status === 401) options.store.dispatch('user/logout')
         Promise.reject(error)
       }
     })
